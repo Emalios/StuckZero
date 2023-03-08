@@ -1,63 +1,116 @@
-import chess
-import chess.svg
-from PyQt5.QtCore import pyqtSlot, Qt
-from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtWidgets import QApplication, QWidget
+import chess.pgn
+import pygame
+from pygame import QUIT, MOUSEBUTTONUP
+
+# const
+initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+widthBoard = 512
+heightBoard = 512
+cell_size = heightBoard / 8
+columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
+chessboard = None
+last_pos = None
 
 
-class MainWindow(QWidget):
-    def __init__(self):
-        super().__init__()
+def draw_possible_moves(window):
+    # Get clicked pos
+    if last_pos is None:
+        return
+    print(last_pos)
+    # Get possibles moves from that piece
+    possible_moves = list(map(lambda value: value.__str__()[-2:], filter(lambda move: move.__str__()[:2] == last_pos, chessboard.legal_moves)))
+    # Show them
+    for move in possible_moves:
+        column = columns.index(move[0]) + 1
+        line = 9 - int(move[1])
+        x = (column - 1) * cell_size + cell_size / 2
+        y = (line - 1) * cell_size + cell_size / 2
+        pygame.draw.circle(window, (220, 20, 60), (x, y), cell_size / 8)
 
-        self.setWindowTitle("Chess Titan")
-        self.setGeometry(300, 300, 700, 700)
+def draw_board(window, width, height):
+    window.fill((255, 255, 200), pygame.Rect(0, 0, 700, 700))
+    counter = 0
+    for x in range(0, 8):
+        for y in range(0, 8):
+            color = (238, 238, 210) if counter % 2 == 0 else (118, 150, 86)
+            pygame.draw.rect(window, color, pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size))
+            counter += 1
+        counter -= 1
 
-        self.widgetSvg = QSvgWidget(parent=self)
-        self.svgX = 50  # top left x-pos of chessboard
-        self.svgY = 50  # top left y-pos of chessboard
-        self.cbSize = 600  # size of chessboard
-        self.widgetSvg.setGeometry(self.svgX, self.svgY, self.cbSize, self.cbSize)
-        self.coordinates = True
-        # see chess.svg.py line 129
-        self.margin = 0.05 * self.cbSize if self.coordinates == True else 0
-        self.squareSize = (self.cbSize - 2 * self.margin) / 8.0
-        self.chessboard = chess.Board()
-        self.pieceToMove = [None, None]
 
-    @pyqtSlot(QWidget)
-    def mousePressEvent(self, event):
-        if self.svgX < event.x() <= self.svgX + self.cbSize and self.svgY < event.y() <= self.svgY + self.cbSize:  # mouse on chessboard
-            if event.buttons() == Qt.LeftButton:
-                # if the click is on chessBoard only
-                if self.svgX + self.margin < event.x() < self.svgX + self.cbSize - self.margin and self.svgY + self.margin < event.y() < self.svgY + self.cbSize - self.margin:
-                    file = int((event.x() - (self.svgX + self.margin)) / self.squareSize)
-                    rank = 7 - int((event.y() - (self.svgY + self.margin)) / self.squareSize)
-                    square = chess.square(file, rank)  # chess.sqare.mirror() if white is on top
-                    piece = self.chessboard.piece_at(square)
-                    coordinates = '{}{}'.format(chr(file + 97), str(rank + 1))
-                    if self.pieceToMove[0] is not None:
-                        move = chess.Move.from_uci('{}{}'.format(self.pieceToMove[1], coordinates))
-                        self.chessboard.push(move)
-                        print(self.chessboard.fen())
-                        piece = None
-                        coordinates = None
-                    self.pieceToMove = [piece, coordinates]
-                else:
-                    print('coordinates clicked')
-                # Envoke the paint event.
-                self.update()
+# exemple fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+def draw_pieces(window, fen):
+    x = 0
+    y = 0
+    for char in fen:
+        if char == '/':
+            y += 1
+            x = 0
+        elif char.isnumeric():
+            x += int(char)
+        elif char == ' ':
+            break
         else:
-            QWidget.mousePressEvent(self, event)
+            before = 'w' if char.isupper() else 'b'
+            piece = pygame.image.load('images/' + before + char + '.png')
+            piece = pygame.transform.scale(piece, (cell_size, cell_size))
+            window.blit(piece, (x * cell_size, y * cell_size))
+            x += 1
 
-    @pyqtSlot(QWidget)
-    def paintEvent(self, event):
-        self.chessboardSvg = chess.svg.board(self.chessboard, size=self.cbSize, coordinates=self.coordinates).encode(
-            "UTF-8")
-        self.widgetSvg.load(self.chessboardSvg)
+
+def get_piece_from_pos(pos):
+    col = pos[0] // cell_size
+    row = pos[1] // cell_size
+    return columns[int(col)] + int(8 - row).__str__()
 
 
 if __name__ == "__main__":
-    chessTitan = QApplication([])
-    window = MainWindow()
-    window.show()
-    chessTitan.exec()
+    # initialFen = 'r1bqkb1r/pppp1Qpp/2n2n2/4p3/4P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 4'
+    chessboard = chess.Board(initialFen)
+    pygame.init()
+
+    # Création de la fenêtre
+    window = pygame.display.set_mode((700, 700))
+
+    draw_board(window, widthBoard, heightBoard)
+    draw_pieces(window, initialFen)
+
+    pygame.display.update()
+
+    continuer = 1
+
+    last_pos = None
+
+    while continuer:
+        # checkmate
+        if chessboard.is_checkmate():
+            print("CHECKMATE")
+            break
+        for event in pygame.event.get():
+            if event.type == MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                clicked = get_piece_from_pos(pos)
+                if last_pos is not None:
+                    if last_pos == clicked:
+                        continue
+                    # test if move is valid
+                    # TODO: roque ne fonctionne pas
+                    uci = chess.Move.from_uci(last_pos + clicked)
+                    if uci in chessboard.legal_moves:
+                        chessboard.push(uci)
+                        draw_board(window, widthBoard, heightBoard)
+                        draw_pieces(window, chessboard.fen())
+                        pygame.display.update()
+                    else:
+                        print("invalid move")
+                        for move in chessboard.legal_moves:
+                            print(chess.SQUARE_NAMES[move.to_square])
+                    last_pos = None
+                else:
+                    last_pos = clicked
+                    print('clicked', clicked)
+                    draw_possible_moves(window)
+                    pygame.display.update()
+            if event.type == QUIT:
+                continuer = 0
