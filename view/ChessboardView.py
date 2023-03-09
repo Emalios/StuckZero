@@ -1,5 +1,7 @@
 import pygame
 
+from events.Event import *
+
 baseWidth = 512
 baseHeight = 512
 columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
@@ -13,6 +15,21 @@ class ChessboardView:
         self.height = height
         self.cell_size = width / 8
         self.screen = pygame.display.set_mode(board.get_size())
+
+    def notify(self, event):
+        if isinstance(event, ClickBoardEvent):
+            self.render_all()
+        elif isinstance(event, QuitEvent):
+            # shut down the pygame graphics
+            pygame.quit()
+
+    def render_all(self):
+        """
+        Draw the current game state on screen.
+        """
+        self.draw_board()
+        self.draw_pieces(self.board.fen())
+        pygame.display.update()
 
     def draw_possible_moves(self):
         # Get clicked pos
