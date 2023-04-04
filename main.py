@@ -3,7 +3,7 @@ import pygame
 from pygame import QUIT, MOUSEBUTTONUP
 
 # const
-initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+initialFen = 'rnbqkbnr/pppppppQ/8/8/8/8/PPPPPPPP/RNBQKBNR'
 widthBoard = 512
 heightBoard = 512
 cell_size = heightBoard / 8
