@@ -54,6 +54,12 @@ class ChessboardView:
         # Show them
         for move in possible_moves:
             # TODO: crash when we click on the line before the last column with a pawn
+            # When a pawn is about to promote, we have all possible promotions possible in the form of
+            # 8<q | r | b | n>
+            # anothr problem is that we don't have informations about the column of the pawn, that can be possibly problematic
+            # in some rare case
+            print("moves", possible_moves)
+            print("move", move)
             column = columns.index(move[0]) + 1
             line = 9 - int(move[1])
             x = (column - 1) * self.cell_size + self.cell_size / 2
