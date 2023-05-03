@@ -17,7 +17,6 @@ def draw_possible_moves(window):
     # Get clicked pos
     if last_pos is None:
         return
-    print(last_pos)
     # Get possibles moves from that piece
     possible_moves = list(map(lambda value: value.__str__()[-2:], filter(lambda move: move.__str__()[:2] == last_pos, chessboard.legal_moves)))
     # Show them
@@ -104,12 +103,9 @@ if __name__ == "__main__":
                         pygame.display.update()
                     else:
                         print("invalid move")
-                        for move in chessboard.legal_moves:
-                            print(chess.SQUARE_NAMES[move.to_square])
                     last_pos = None
                 else:
                     last_pos = clicked
-                    print('clicked', clicked)
                     draw_possible_moves(window)
                     pygame.display.update()
             if event.type == QUIT:

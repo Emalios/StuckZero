@@ -1,11 +1,12 @@
 import chess
 
-initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq'
 
 
 class Chessboard:
 
-    def __init__(self, fen=initialFen):
+    def __init__(self, stockfish, fen=initialFen):
+        self.stockfish = stockfish
         self.board = chess.Board(fen)
         self.last_pos = None
         self.observators = []
@@ -13,7 +14,15 @@ class Chessboard:
     def get_last_pos(self):
         return self.last_pos
 
+    def get_evaluation(self):
+        fen = self.board.fen()
+        self.stockfish.set_fen_position(fen)
+        return self.stockfish.get_evaluation()
+
     def click_on(self, pos):
+        print(self.board.fen())
+        print(self.board.move_stack)
+        print(self.board.legal_moves)
         if self.last_pos is not None:
             if self.last_pos == pos:
                 return
@@ -25,12 +34,9 @@ class Chessboard:
                 self.notify_observators()
             else:
                 print("invalid move")
-                for move in self.board.legal_moves:
-                    print(chess.SQUARE_NAMES[move.to_square])
             self.last_pos = None
         else:
             self.last_pos = pos
-            print('clicked', pos)
             self.notify_observators(True)
 
     def fen(self):
@@ -46,8 +52,6 @@ class Chessboard:
         return self.board
 
     def notify_observators(self, draw_possibles_moves=False):
-        print("notify", draw_possibles_moves)
-        print(self.observators)
         for observator in self.observators:
             observator.render_all(draw_possibles_moves)
 

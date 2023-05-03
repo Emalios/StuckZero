@@ -4,6 +4,7 @@ from pygame import MOUSEBUTTONUP, QUIT
 from model.Chessboard import Chessboard
 from view.ChessboardView import ChessboardView
 from controller.Click import Click
+from stockfish import Stockfish
 
 
 def game_loop(model, graphics):
@@ -19,7 +20,10 @@ def game_loop(model, graphics):
 
 
 def run():
-    model = Chessboard()
+    stockfish = Stockfish(path="stockfish-windows-2022-x86-64-avx2.exe", depth=18,
+                          parameters={"Threads": 2})
+
+    model = Chessboard(stockfish)
     graphics = ChessboardView(model)
     model.register_observator(graphics)
     pygame.init()
