@@ -35,6 +35,7 @@ def minimax_alpha_beta(board, depth, alpha, beta, maximizing_player):
             alpha = max(alpha, value)
             if alpha >= beta:
                 break  # Élagage beta
+            print("max move", move)
             return value
     else:
         value = float('inf')
@@ -45,6 +46,7 @@ def minimax_alpha_beta(board, depth, alpha, beta, maximizing_player):
             beta = min(beta, value)
             if alpha >= beta:
                 break  # Élagage alpha
+            print("min move", move)
             return value
 
 

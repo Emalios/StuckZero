@@ -1,7 +1,7 @@
 import pygame
 from pygame import MOUSEBUTTONUP, QUIT
 
-from model.Chessboard import Chessboard
+from model.chessboard import Chessboard
 from view.ChessboardView import ChessboardView
 from controller.Click import Click
 from stockfish import Stockfish
