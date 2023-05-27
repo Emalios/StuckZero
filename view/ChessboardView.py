@@ -1,8 +1,6 @@
 import chess
 import pygame
 
-from events.Event import *
-
 baseWidth = 512
 baseHeight = 512
 cell_size = baseHeight / 8

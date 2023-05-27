@@ -1,5 +1,7 @@
 import chess
 
+from ia.minmax.min_max import find_best_move
+
 
 def evaluate_board(board):
     score = 0
@@ -24,5 +26,5 @@ if __name__ == "__main__":
     fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     board = chess.Board(fen)
     depth = 8
-    best_move = find_best_move(board, depth)
+    best_move = find_best_move(board, depth, evaluate_board)
     print("Best move", best_move)

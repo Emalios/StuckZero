@@ -7,7 +7,7 @@ def minimax_alpha_beta(board, depth, evaluate_board, alpha=-float('inf'), beta=f
         value = -float('inf')
         for move in moves:
             board.push(move)
-            value = max(value, minimax_alpha_beta(board, depth - 1, alpha, beta, False))
+            value = max(value, minimax_alpha_beta(board, depth - 1, evaluate_board, alpha, beta, False))
             board.pop()
             alpha = max(alpha, value)
             if alpha >= beta:
@@ -17,7 +17,7 @@ def minimax_alpha_beta(board, depth, evaluate_board, alpha=-float('inf'), beta=f
         value = float('inf')
         for move in moves:
             board.push(move)
-            value = min(value, minimax_alpha_beta(board, depth - 1, alpha, beta, True))
+            value = min(value, minimax_alpha_beta(board, depth - 1, evaluate_board, alpha, beta, True))
             board.pop()
             beta = min(beta, value)
             if alpha >= beta:

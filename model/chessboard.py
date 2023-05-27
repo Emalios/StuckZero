@@ -35,7 +35,6 @@ def minimax_alpha_beta(board, depth, alpha, beta, maximizing_player):
             alpha = max(alpha, value)
             if alpha >= beta:
                 break  # Élagage beta
-            print("max move", move)
             return value
     else:
         value = float('inf')
@@ -46,7 +45,6 @@ def minimax_alpha_beta(board, depth, alpha, beta, maximizing_player):
             beta = min(beta, value)
             if alpha >= beta:
                 break  # Élagage alpha
-            print("min move", move)
             return value
 
 
@@ -62,6 +60,7 @@ class Chessboard:
 
     def __init__(self, stockfish, fen=initialFen):
         self.stockfish = stockfish
+        self.list = []
         self.board = chess.Board(fen)
         self.last_pos = None
         self.observators = []
@@ -75,17 +74,13 @@ class Chessboard:
         return self.stockfish.get_evaluation()
 
     def click_on(self, pos):
-        print(self.board.fen())
-        print(self.board.move_stack)
-        print(self.board.legal_moves)
         if self.last_pos is not None:
             if self.last_pos == pos:
                 return
-            # test if move is valid
-            # TODO: roque ne fonctionne pas
             uci = chess.Move.from_uci(self.last_pos + pos)
             if uci in self.board.legal_moves:
                 self.board.push(uci)
+                self.list.append(self.board.fen())
                 self.notify_observators()
             else:
                 print("invalid move")
@@ -98,6 +93,8 @@ class Chessboard:
         return self.board.fen()
 
     def is_ended(self):
+        if self.board.is_checkmate():
+            print(self.list)
         return self.board.is_checkmate()
 
     def get_possible_moves(self):
