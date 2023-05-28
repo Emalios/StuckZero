@@ -20,10 +20,7 @@ def game_loop(model, graphics):
 
 
 def run():
-    stockfish = Stockfish(path="stockfish-windows-2022-x86-64-avx2.exe", depth=32,
-                          parameters={"Threads": 2})
-
-    model = Chessboard(stockfish)
+    model = Chessboard()
     graphics = ChessboardView(model)
     model.register_observator(graphics)
     pygame.init()

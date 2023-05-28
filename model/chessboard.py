@@ -1,7 +1,7 @@
 import chess
+from stockfish import Stockfish
 
 initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq'
-
 
 def evaluate_board(board):
     score = 0
@@ -58,9 +58,11 @@ def start():
 
 class Chessboard:
 
-    def __init__(self, stockfish, fen=initialFen):
+    def __init__(self, stockfish=Stockfish(path="../stockfish-windows-2022-x86-64-avx2.exe", depth=14,
+                          parameters={"Threads": 6}), fen=initialFen):
         self.stockfish = stockfish
         self.list = []
+        self.moves_list = []
         self.board = chess.Board(fen)
         self.last_pos = None
         self.observators = []
@@ -79,7 +81,14 @@ class Chessboard:
                 return
             uci = chess.Move.from_uci(self.last_pos + pos)
             if uci in self.board.legal_moves:
+                previous_fen = self.board.fen()
                 self.board.push(uci)
+                # Affichage des x meilleurs coups
+                self.stockfish.set_fen_position(previous_fen)
+                best_moves = self.stockfish.get_top_moves(3)
+                print(uci, str(uci) in str(best_moves))
+                print(best_moves)
+                self.moves_list.append(uci)
                 self.list.append(self.board.fen())
                 self.notify_observators()
             else:
@@ -95,6 +104,7 @@ class Chessboard:
     def is_ended(self):
         if self.board.is_checkmate():
             print(self.list)
+            print(self.moves_list)
         return self.board.is_checkmate()
 
     def get_possible_moves(self):
