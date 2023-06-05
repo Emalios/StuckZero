@@ -82,8 +82,9 @@ def save_result(file, result):
             writer = csv.writer(csvfile)
             writer.writerow(result)
         print("Résultats", result, "ajoutés au fichier CSV avec succès.")
-    except IOError:
+    except IOError as e:
         print("Erreur lors de l'écriture des résultats dans le fichier CSV.")
+        print(str(e))
 
 
 if __name__ == "__main__":
