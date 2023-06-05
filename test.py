@@ -4,25 +4,6 @@ import chess.pgn
 from ia.minmax.min_max import find_best_move
 
 
-def evaluate_board(board):
-    score = 0
-    for square in chess.SQUARES:
-        piece = board.piece_at(square)
-        if piece is not None:
-            if piece.color == chess.WHITE:
-                score += piece_value(piece)
-            else:
-                score -= piece_value(piece)
-    return score
-
-
-def piece_value(piece):
-    if piece is None:
-        return 0
-    values = {"P": 100, "N": 320, "B": 330, "R": 500, "Q": 900, "K": 20000}
-    return values[piece.symbol().upper()]
-
-
 def generate_pgn(fen_list):
     moves_list = [chess.Move.from_uci(move_str) for move_str in [
         'e2e4', 'd7d5', 'e4e5', 'c7c5', 'd2d4', 'c5c4', 'g1f3', 'e7e6', 'c1g5',
@@ -32,7 +13,6 @@ def generate_pgn(fen_list):
         'b5d6', 'f8d8', 'a8c6', 'g7e5', 'd6b7', 'h7h6', 'h4d8', 'e4f2', 'c6e8',
         'g8h7', 'e8f7', 'h7h8', 'f3e5', 'c8d7', 'd8f6'
     ]]
-
     # Create a new PGN game
     game = chess.pgn.Game()
 

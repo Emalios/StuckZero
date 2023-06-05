@@ -20,14 +20,14 @@ class ChessboardView:
     def notify(self, pos=None):
         self.render_all()
 
-    def is_click_on_component(self, pos):
-        (x, y) = pos
-        return x >= 0 & y >= 0 & x <= self.width & x < self.height
-
     def get_board_pos(self, pos):
         col = pos[0] // cell_size
         row = pos[1] // cell_size
-        return columns[int(col)] + int(8 - row).__str__()
+        return columns[int(col)] + str(int(8 - row))
+
+    def is_click_on_component(self, pos):
+        (x, y) = pos
+        return x >= 0 & y >= 0 & x <= self.width & x < self.height
 
     def render_all(self, draw_possibles_moves=False):
         """
