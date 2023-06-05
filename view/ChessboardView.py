@@ -1,6 +1,5 @@
+import chess
 import pygame
-
-from events.Event import *
 
 baseWidth = 512
 baseHeight = 512
@@ -21,14 +20,14 @@ class ChessboardView:
     def notify(self, pos=None):
         self.render_all()
 
-    def is_click_on_component(self, pos):
-        (x, y) = pos
-        return x >= 0 & y >= 0 & x <= self.width & x < self.height
-
     def get_board_pos(self, pos):
         col = pos[0] // cell_size
         row = pos[1] // cell_size
-        return columns[int(col)] + int(8 - row).__str__()
+        return columns[int(col)] + str(int(8 - row))
+
+    def is_click_on_component(self, pos):
+        (x, y) = pos
+        return x >= 0 & y >= 0 & x <= self.width & x < self.height
 
     def render_all(self, draw_possibles_moves=False):
         """
@@ -36,9 +35,7 @@ class ChessboardView:
         """
         self.draw_board()
         self.draw_pieces(self.board.fen())
-        print("graphics update", draw_possibles_moves)
         if draw_possibles_moves:
-            print("draw possible moves")
             self.draw_possible_moves()
         pygame.display.update()
 
@@ -47,7 +44,6 @@ class ChessboardView:
         last_pos = self.board.get_last_pos()
         if last_pos is None:
             return
-        print(last_pos)
         # Get possibles moves from that piece
         possible_moves = list(map(lambda value: value.__str__()[-2:],
                                   filter(lambda move: move.__str__()[:2] == last_pos, self.board.get_possible_moves())))
@@ -58,8 +54,6 @@ class ChessboardView:
             # 8<q | r | b | n>
             # anothr problem is that we don't have informations about the column of the pawn, that can be possibly problematic
             # in some rare case
-            print("moves", possible_moves)
-            print("move", move)
             column = columns.index(move[0]) + 1
             line = 9 - int(move[1])
             x = (column - 1) * self.cell_size + self.cell_size / 2
