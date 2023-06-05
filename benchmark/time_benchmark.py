@@ -3,8 +3,8 @@ import csv
 from chess import Board
 import time
 
-from ia.minmax.eval import evaluate_board
-from ia.minmax.min_max import *
+from ..ia.minmax.eval import evaluate_board
+from ..ia.minmax.min_max import *
 
 random_fen_list = [
     "7R/8/5BP1/P2k1p2/p4q1p/8/Pp1p1P2/3K2QR w - - 0 1",
